@@ -89,3 +89,6 @@ VALUES
 
 -- 9. Check data
 SELECT * FROM servers;
+
+
+--thank you
