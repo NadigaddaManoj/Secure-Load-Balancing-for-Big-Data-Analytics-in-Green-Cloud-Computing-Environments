@@ -1,0 +1,9 @@
+# NetBeans project files
+nbproject/private/
+build/
+dist/
+nbdist/
+.nb-gradle/
+
+# Secret key file
+secret.key
