@@ -1,0 +1,91 @@
+-- 1. Create database
+CREATE DATABASE secure;
+USE secure;
+
+-- 2. Users table
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    password VARCHAR(255),
+    email VARCHAR(100),
+    mobile VARCHAR(15),
+    address VARCHAR(255),
+    dob DATE,
+    gender ENUM('Male','Female','Other'),
+    pincode VARCHAR(10),
+    reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Servers table
+CREATE TABLE servers (
+    server_id INT AUTO_INCREMENT PRIMARY KEY,
+    server_name VARCHAR(100),
+    capacity INT,
+    current_load INT DEFAULT 0,
+    energy_usage FLOAT DEFAULT 0,
+    trust_score FLOAT DEFAULT 0.5,
+    status VARCHAR(50) DEFAULT 'Active'
+);
+
+-- 4. Tasks table
+CREATE TABLE tasks (
+    task_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    server_id INT,
+    file_name VARCHAR(255),
+    file_data LONGBLOB,
+    status VARCHAR(50) DEFAULT 'Running',
+    algorithm_used VARCHAR(100),
+    trust_score FLOAT DEFAULT 0.5,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (server_id) REFERENCES servers(server_id)
+);
+
+-- 5. Trust log table
+CREATE TABLE trust_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    server_id INT,
+    user_id INT,
+    old_trust FLOAT,
+    new_trust FLOAT,
+    update_reason VARCHAR(255),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (server_id) REFERENCES servers(server_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- 6. Energy log table
+CREATE TABLE energy_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    server_id INT,
+    task_id INT,
+    energy_used FLOAT,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (server_id) REFERENCES servers(server_id),
+    FOREIGN KEY (task_id) REFERENCES tasks(task_id)
+);
+
+-- 7. File requests table
+CREATE TABLE file_requests (
+    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT,
+    requester_id INT,
+    owner_id INT,
+    status VARCHAR(20) DEFAULT 'pending',
+    request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES tasks(task_id),
+    FOREIGN KEY (requester_id) REFERENCES users(user_id),
+    FOREIGN KEY (owner_id) REFERENCES users(user_id)
+);
+
+-- 8. Insert sample servers
+INSERT INTO servers (server_name, capacity, current_load, energy_usage, trust_score, status)
+VALUES
+('Server_A', 10, 0, 20.5, 0.9, 'Active'),
+('Server_B', 8, 0, 15.3, 0.85, 'Active'),
+('Server_C', 12, 0, 25.7, 0.8, 'Active');
+
+-- 9. Check data
+SELECT * FROM servers;
